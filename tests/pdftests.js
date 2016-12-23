@@ -1,5 +1,17 @@
+// http://altitudelabs.com/blog/create-a-slackbot-using-botkit/
+// https://github.com/howdyai/botkit
+// https://github.com/dbashford/textract
+
 var textract = require('textract');
 var filePath = 'files/fox_51.pdf';
+
+var url = "http://www.kajaani.fi/sites/default/files/fox_vko_49_linjasto_1_ja_2.pdf";
+var config = {
+	preserveLineBreaks: true,
+	pdftotextOptions: {
+		layout: 'raw'
+	}
+}
 
 /*
 textract.fromFileWithPath(filePath, function( error, text ) {
@@ -10,17 +22,20 @@ textract.fromFileWithPath(filePath, function( error, text ) {
 });
 */
 
-var url = "http://www.kajaani.fi/sites/default/files/fox_vko_51_linjasto_1_ja_2.pdf";
-textract.fromUrl(url, function( error, text ) {
+textract.fromUrl(url,config,  function( error, text ) {
 	if(error)
 		console.log(error);
 	else {
 		
-		var reqEx = //;
-		text = text.split(' ');
-		console.log(text.toString());
-		//text = removeMatching(text, /[]/)
+		//var reqEx = //;
+		text = text.split('\n');
+		//text = text.slice().pop();
+		text = removeMatching(text, /[0-9]/gi); // tästä se lähtee...
 
+		//for(index in text)
+		//	console.log(text[index]);
+
+		console.log(text);
 		console.log(typeof(text));
 	}
 });
