@@ -9,6 +9,7 @@
   "author": "Antero Juutinen",
   "license": "ISC",
   "devDependencies": {
+    "eslint-plugin-import": "^2.2.0",
     "grunt": "^1.0.1",
     "grunt-clear": "^0.2.1",
     "grunt-cli": "*",
@@ -16,6 +17,7 @@
     "grunt-contrib-clean": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-watch": "^1.0.0",
+    "grunt-eslint": "^19.0.0",
     "grunt-htmlhint": "^0.9.13",
     "grunt-jscs": "^3.0.1",
     "grunt-nodemon": "^0.4.2",
@@ -27,6 +29,7 @@
   "dependencies": {
     "botkit": "^0.4.5",
     "colors": "^1.1.2",
+    "lodash": "^4.17.3",
     "mongoose": "^4.4.19",
     "textract": "^2.0.0"
   }

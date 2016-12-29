@@ -2,63 +2,76 @@
 // https://github.com/howdyai/botkit
 // https://github.com/dbashford/textract
 
-var textract = require('textract');
-var filePath = 'files/fox_51.pdf';
+(function(){
 
-var url = "http://www.kajaani.fi/sites/default/files/fox_vko_49_linjasto_1_ja_2.pdf";
-var config = {
-	preserveLineBreaks: true,
-	pdftotextOptions: {
-		layout: 'raw'
+	var textract = require('textract');
+	var filePath = 'files/fox_51.pdf';
+	var config = {
+		preserveLineBreaks: true,
+		pdftotextOptions: {
+			layout: 'layout'
+		}
 	}
-}
 
-/*
-textract.fromFileWithPath(filePath, function( error, text ) {
-	if(error)
-		console.log(error);
-	else
-		console.log(text);
-});
-*/
+	var url = "http://www.kajaani.fi/sites/default/files/fox_vko_WEEKNO_linjasto_1_ja_2.pdf";
+	var weekNo = getWeekNumber(new Date());
+	url.replace(/\WEEKNO\b/, weekNo);
 
-textract.fromUrl(url,config,  function( error, text ) {
-	if(error)
-		console.log(error);
-	else {
-		
-		//var reqEx = //;
-		text = text.split('\n');
-		//text = text.slice().pop();
-		text = removeMatching(text, /[0-9]/gi); // tästä se lähtee...
 
-		//for(index in text)
-		//	console.log(text[index]);
+	var FOOD_MSG = "Tänään turo tarjoaa: ";
 
-		console.log(text);
-		console.log(typeof(text));
+	module.exports = function (url) {
+		textract.fromUrl(url,config,  function( error, text ) {
+			if(error)
+				return error;
+			else {		
+				text = text.split('\n');
+
+				// remove all the unnecessary markings on each line
+				text.forEach(function(item, index, object) {
+					object[index] = object[index].replace(/[0-9,]/g, '');
+		 			object[index] = object[index].replace(/\LA GL\b/, '');
+		 			object[index] = object[index].replace(/\LA\b/, '');
+		 			object[index] = object[index].replace(/\ S\b/, '');
+		 			object[index] = object[index].replace(/\MA\b/, '');
+		 			object[index] = object[index].replace(/\GL\b/, '');
+		 			object[index] = object[index].replace(/\ V\b/, '');
+		 			object[index] = object[index].trim();
+				});
+
+				// Get current day and push 
+				var day = getCurrentDayText();
+				text.forEach(function(item, index, object) {
+		 			if (item.indexOf(day) == 0) { return (FOOD_MSG + object[index+2] + " sekä " + object[index+3]); }
+				});
+			}
+		});
 	}
-});
 
+	function getCurrentDayText() {
+		var d = new Date();
+		var n = d.getDay();
 
-function removeMatching(originalArray, regex) {
-    var j = 0;
-    while (j < originalArray.length) {
-        if (regex.test(originalArray[j]))
-            originalArray.splice(j, 1);
-        else
-            j++;
-    }
-    return originalArray;
-}
+		if(n == 1) return 'Maanantai';
+		else if(n == 2) return 'Tiistai';
+		else if(n == 3) return 'keskiviikko';
+		else if(n == 4) return 'Torstai';
+		else if (n == 5) return 'perjantai';
+	}
 
-function getCurrentDayText() {
-	var d = new Date();
-	var n = d.getDay();
+	function getWeekNumber(d) {
+	    // Copy date so don't modify original
+	    d = new Date(+d);
+	    d.setHours(0,0,0,0);
+	    // Set to nearest Thursday: current date + 4 - current day number
+	    // Make Sunday's day number 7
+	    d.setDate(d.getDate() + 4 - (d.getDay()||7));
+	    // Get first day of year
+	    var yearStart = new Date(d.getFullYear(),0,1);
+	    // Calculate full weeks to nearest Thursday
+	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+	    // Return array of year and week number
+	    return weekNo;
+	}
 
-	if(n == 1) return 'Maanantai';
-	else if(n == 2) return 'Tiistai';
-	else if(n == 3) return 'keskiviikko';
-	else if(n == 4) return 'Torstai';
-	else if (n == 5) return 'perjantai';
-}
+})();

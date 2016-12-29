@@ -1,21 +1,24 @@
-'use strict';
 module.exports = function(grunt){
     grunt.initConfig({
-        jshint: {
-            options: { reporter: require('jshint-stylish') },
-            files: ['lib/**/*.js','models/**/*.js']
-        },
+        //jshint: {
+        //    options: { reporter: require('jshint-stylish') },
+        //    files: ['lib/**/*.js','models/**/*.js']
+        //},
         nsp: {
     		package: grunt.file.readJSON('package.json')
   		},
+        eslint: {
+            target: ['lib/**/*.js','models/**/*.js']
+        },
         watch: {
             files: ['lib/**/*.js','models/**/*.js'],
-            tasks: ['jshint']
+            tasks: ['eslint']
         },
         nodemon: { dev: { script: 'lib/index.js' } },
         concurrent: {
             dev: [
-                'jshint',
+                'eslint',
+                //'jshint',
                 'nsp',                
                 'watch',
                 'nodemon'
@@ -28,9 +31,10 @@ module.exports = function(grunt){
     });
 
     grunt.loadNpmTasks('grunt-concurrent');
-    grunt.loadNpmTasks("grunt-contrib-jshint");    
-    grunt.loadNpmTasks("grunt-nodemon");
-    grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks('grunt-eslint');
+    grunt.loadNpmTasks('grunt-contrib-jshint');    
+    grunt.loadNpmTasks('grunt-nodemon');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-nsp');
     //Uglifyjs 
 
